@@ -1,0 +1,1675 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Kino · Linear Algebra Lab</title><style>:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 14px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, "Segoe UI", sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --icon-size: 16px;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --corner-shape: round;
+  --radius: var(--border-radius-lg, 10px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 17'%3E%3Cpath d='M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z'/%3E%3C/svg%3E");
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html > body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: var(--visualize-paint-gutter, 0px);
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+.cursor-interaction {
+  cursor: var(--cursor-interaction, pointer);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: var(--cursor-interaction, pointer);
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive > .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align="right"]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align="center"]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: var(--corner-shape);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+.widget {
+  min-width: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  box-shadow: 0 0 0 0.5px var(--border-strong, var(--border));
+  color: var(--foreground);
+  background: var(--background);
+}
+
+#widget > :not(.card, .widget, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+hr {
+  width: 100%;
+  height: 1px;
+  margin-block: 6px;
+  border: 0;
+  background: var(--border);
+}
+
+.nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress {
+  display: flex;
+  height: 8px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 8px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar:only-child {
+  border-radius: var(--radius-full);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls > .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls > .form-label > :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.nav-link,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn,
+.nav-link {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: var(--cursor-interaction, pointer);
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover,
+.nav-link:not(:disabled):not([aria-disabled="true"]):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.nav-pills .nav-link {
+  min-width: 0;
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.nav-justified .nav-link {
+  flex: 1 1 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.nav-pills .nav-link.active {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+/* Shared preview chrome; product styles stay inside each variant. */
+.viz-dotted-background {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--foreground) 14%, transparent) 0.8px,
+    transparent 0.8px
+  );
+  background-position: center;
+  background-size: 16px 16px;
+}
+
+.viz-carousel {
+  position: relative;
+  min-width: 0;
+}
+
+.viz-carousel:has(> .viz-carousel-controls) {
+  min-height: calc(60px + var(--viz-carousel-picker-height, 0px));
+  padding-bottom: 60px;
+}
+
+.viz-carousel > [data-variant][hidden] {
+  display: none !important;
+}
+
+.viz-carousel > [data-variant] {
+  isolation: isolate;
+}
+
+.viz-carousel-controls {
+  --viz-carousel-hover: light-dark(
+    color-mix(in srgb, var(--foreground) 5.4%, transparent),
+    color-mix(in srgb, var(--foreground) 7.8%, transparent)
+  );
+  position: absolute;
+  z-index: 2;
+  bottom: 8px;
+  left: 50%;
+  display: flex;
+  width: max-content;
+  /* Leave room for the host's design-controls launcher at the trailing edge. */
+  max-width: calc(100% - 96px);
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-sans);
+  /* Match the settings dropdown chrome independently of the content font size. */
+  font-size: 13px;
+  font-weight: var(--font-weight-normal);
+  line-height: 18px;
+  transform: translateX(-50%);
+  user-select: none;
+}
+
+/* Keep authored mockup button styles out of the shared carousel chrome. */
+.viz-carousel-controls button,
+.viz-carousel-picker > summary {
+  display: flex !important;
+  height: auto !important;
+  min-height: 30px;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px;
+  padding: 0 6px !important;
+  -webkit-app-region: no-drag;
+  border: 0 !important;
+  border-radius: 14px !important;
+  color: inherit !important;
+  background: transparent !important;
+  font: inherit !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.viz-carousel-controls > button,
+.viz-carousel-picker > summary {
+  position: relative;
+  isolation: isolate;
+}
+
+.viz-carousel-controls > button {
+  --icon-size: 16px;
+  width: 30px !important;
+  padding: 0 !important;
+}
+
+.viz-carousel-picker > summary {
+  padding-inline: 12px !important;
+}
+
+.viz-carousel-controls .viz-carousel-caret {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  margin: 0;
+  color: inherit;
+  transform: rotate(180deg);
+}
+
+.viz-carousel-controls > button > svg,
+.viz-carousel-controls .viz-carousel-caret,
+.viz-carousel-count {
+  opacity: 0.5;
+}
+
+.viz-carousel-controls > button::before,
+.viz-carousel-picker > summary::before {
+  position: absolute;
+  z-index: -1;
+  inset: 3px;
+  border-radius: 12px;
+  content: "";
+  pointer-events: none;
+}
+
+.viz-carousel-controls > button:hover::before,
+.viz-carousel-picker > summary:hover::before {
+  background: var(--viz-carousel-hover);
+}
+
+.viz-carousel-controls > button,
+.viz-carousel-controls [data-lucide],
+.viz-carousel-controls .lucide {
+  flex-shrink: 0;
+}
+
+.viz-carousel-picker {
+  min-width: 0;
+}
+
+.viz-carousel-picker > summary {
+  min-width: 0;
+  list-style: none;
+}
+
+.viz-carousel-picker > summary::-webkit-details-marker {
+  display: none;
+}
+
+.viz-carousel-count {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.viz-carousel-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viz-carousel-options {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 4px);
+  left: 0;
+  display: flex;
+  max-height: 240px;
+  flex-direction: column;
+  gap: 2px;
+  overflow: auto;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--background);
+  box-shadow: 0 4px 12px light-dark(rgb(0 0 0 / 6%), rgb(0 0 0 / 25%));
+}
+
+.viz-carousel-options > button {
+  border-radius: max(0px, calc(var(--radius-lg) - 5px)) !important;
+  width: 100% !important;
+  min-height: 28px;
+  justify-content: flex-start !important;
+  padding: 4px 8px !important;
+  font-size: var(--font-size-small) !important;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.viz-carousel-options > [aria-current="true"],
+.viz-carousel-options > button:hover {
+  background: var(--viz-carousel-hover) !important;
+}
+
+.btn:disabled,
+.nav-link:disabled,
+.nav-link[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type="file"] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type="file"]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type="file"]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type="color"] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: var(--corner-shape);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: "";
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type="radio"] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type="radio"]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: "";
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed="true"],
+  [aria-selected="true"],
+  .is-selected
+) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed="true"], [aria-selected="true"], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible,
+.nav-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.viz-carousel-controls :is(button, summary):focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px !important;
+}
+
+@media (pointer: coarse) {
+  .viz-carousel:has(> .viz-carousel-controls) {
+    min-height: calc(76px + var(--viz-carousel-picker-height, 0px));
+    padding-bottom: 76px;
+  }
+
+  .btn,
+  .nav-link,
+  .viz-carousel-controls button,
+  .viz-carousel-picker > summary,
+  .form-control,
+  .form-select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Keep small-screen WebKit from zooming when a text field receives focus. */
+  .form-control,
+  .form-select {
+    font-size: max(16px, var(--font-size-normal));
+  }
+
+  .form-control[type="file"]::file-selector-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control-color[type="color"] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .form-control:is(
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="time"],
+    [type="week"]
+  ) {
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 8px;
+  }
+
+  .form-check {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .form-check-input {
+    position: relative;
+  }
+
+  .form-check-input::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: "";
+    transform: translate(-50%, -50%);
+  }
+
+  .form-check-label {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .form-range {
+    height: 44px;
+    touch-action: pan-y;
+  }
+
+  .form-range::-webkit-slider-runnable-track {
+    height: 44px;
+  }
+
+  .form-range::-moz-range-track {
+    height: 44px;
+  }
+
+  .form-range::-webkit-slider-thumb {
+    margin-top: 12px;
+  }
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget > svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: var(--icon-size) !important;
+  height: var(--icon-size) !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html>body{padding:0}
+html,body{margin:0;padding:0;background:#fff;color:#203745;color-scheme:light}body{padding:14px}#kino-planar-arm .kino-controls{max-height:calc(100vh - 32px)}@media(max-width:700px){#kino-planar-arm .kino-controls{max-height:42vh;overflow:auto}#kino-planar-arm .kino-scene{max-height:48vh}}</style><script>
+(()=>{let saved=null;try{saved=JSON.parse(localStorage.getItem('kino-course-lab-state'));}catch{}window.openai={widgetState:saved,setWidgetState:async s=>{window.openai.widgetState=s;try{localStorage.setItem('kino-course-lab-state',JSON.stringify(s));}catch{}}};})();
+</script></head><body><div id="kino-planar-arm">
+  <style>
+    #kino-planar-arm .kino-layout{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,3fr);gap:0;align-items:start}
+    #kino-planar-arm .kino-plot{min-width:0}
+    #kino-planar-arm [hidden]{display:none!important}
+    #kino-planar-arm .kino-controls{display:flex;flex-direction:column;gap:24px;padding-left:24px;padding-right:8px;min-width:0;max-height:calc(100vh - 90px);overflow-y:auto;scrollbar-gutter:stable;box-sizing:border-box}
+    #kino-planar-arm .kino-joint{display:flex;flex-direction:column;gap:10px;min-width:0}
+    #kino-planar-arm .kino-heading{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+    #kino-planar-arm svg{display:block;width:100%;overflow:hidden}
+    #kino-planar-arm svg text{fill:var(--foreground);font-size:12px;font-weight:400}
+    #kino-planar-arm .kino-output{display:none}
+    @media(max-width:700px){#kino-planar-arm .kino-layout{grid-template-columns:1fr}#kino-planar-arm .kino-controls{padding-left:0;max-height:none;overflow-y:visible}}
+  </style>
+  
+  <div class="kino-layout"><div class="kino-plot">
+  <svg class="kino-scene" role="img" aria-label="Kino, a fixed-base three-joint robot arm with a gripper, on an x-y coordinate grid"></svg>
+  <div class="kino-output tabular-nums"></div>
+  </div><div class="kino-controls"></div></div>
+  <div class="kino-error text-destructive" role="alert"></div>
+  <script>
+  (()=>{
+    const root=document.getElementById('kino-planar-arm');
+    const svg=root.querySelector('svg'),controls=root.querySelector('.kino-controls'),output=root.querySelector('.kino-output'),error=root.querySelector('.kino-error');
+    const defaults={lengths:[2.5,2,1.2],angles:[0,0,0],locked:[true,true,true],background:false,projection:false,matrix:false};
+    let state=structuredClone(defaults);
+    const valid=s=>s&&Array.isArray(s.lengths)&&s.lengths.length===3&&s.lengths.every(v=>Number.isFinite(v)&&v>=0.1&&v<=10)&&Array.isArray(s.angles)&&s.angles.length===3&&s.angles.every(v=>Number.isFinite(v)&&v>=-180&&v<=180)&&Array.isArray(s.locked)&&s.locked.length===3&&s.locked.every(v=>typeof v==='boolean');
+    const saved=window.openai?.widgetState?.modelContent;
+    if(valid(saved)&&saved.poseVersion===2)state=structuredClone(saved);
+    const save=()=>{window.openai?.setWidgetState?.({modelContent:{...structuredClone(state),poseVersion:2},privateContent:null})?.catch(()=>{});};
+    controls.innerHTML='<label class="form-check"><input class="form-check-input" type="checkbox" id="kino-background"><span class="form-check-label">Fade robot into background</span></label>'+[0,1,2].map(i=>`<div class="kino-joint"><div class="kino-heading"><span>Link ${i+1} / joint ${i+1}</span><label class="form-check"><input class="form-check-input" type="checkbox" id="kino-lock-${i}"><span class="form-check-label">Locked</span></label></div><label class="form-label" for="kino-length-${i}">Length (m)</label><input class="form-control" type="number" min="0.1" max="10" step="0.1" id="kino-length-${i}"><label class="form-label" for="kino-angle-${i}">Joint angle <span class="tabular-nums" id="kino-value-${i}"></span></label><input class="form-range" type="range" min="-180" max="180" step="1" id="kino-angle-${i}"></div>`).join('');
+    controls.insertAdjacentHTML('afterbegin',`<div class="kino-joint"><span>Target vector · base frame</span><label class="form-label" for="kino-target-x">x (m)</label><input class="form-control" id="kino-target-x" type="number" step="0.1" value="4"><label class="form-label" for="kino-target-y">y (m)</label><input class="form-control" id="kino-target-y" type="number" step="0.1" value="3"><div class="viz-row"><button type="button" class="btn btn-primary" id="kino-go">Go there</button><button type="button" class="btn" id="kino-stop" disabled>Stop</button></div><span class="text-small">Proportional link scaling · base joint turns as needed</span></div>`);
+    controls.insertAdjacentHTML('afterbegin','<button type="button" class="btn" id="kino-projection" aria-pressed="false">Projection</button>');
+    root.querySelector('#kino-projection').insertAdjacentHTML('afterend',`<div id="kino-projection-options" class="kino-joint" hidden><label class="form-label" for="kino-project-on">Project onto</label><select class="form-select" id="kino-project-on"><option value="both">î and ĵ</option><option value="i">î only</option><option value="j">ĵ only</option><option value="custom">New basis · both vectors</option><option value="custom1">New basis · b₁ only</option><option value="custom2">New basis · b₂ only</option></select><div id="kino-custom-direction" hidden><label class="form-label"><span style="display:inline-block;width:12px;height:12px;background:#0072B2;margin-right:6px" aria-hidden="true"></span>b₁ · (x, y)</label><div class="viz-row"><input aria-label="b1 x" class="form-control" type="number" step="any" id="kino-a-x" value="2"><input aria-label="b1 y" class="form-control" type="number" step="any" id="kino-a-y" value="1"></div><button class="btn" type="button" id="kino-unit">Make b₁ unit length</button><label class="form-label"><span style="display:inline-block;width:12px;height:12px;background:#0072B2;margin-right:6px" aria-hidden="true"></span>b₂ · (x, y)</label><div class="viz-row"><input aria-label="b2 x" class="form-control" type="number" step="any" id="kino-b-x" value="-1"><input aria-label="b2 y" class="form-control" type="number" step="any" id="kino-b-y" value="2"></div><button class="btn" type="button" id="kino-unit-b">Make b₂ unit length</button><div id="kino-a-norm" class="text-small" aria-live="polite"></div></div><label class="form-check"><input class="form-check-input" type="checkbox" id="kino-standard-grid" checked><span class="form-check-label">Standard grid and axes</span></label><label class="form-check"><input class="form-check-input" type="checkbox" id="kino-basis-grid" checked><span class="form-check-label">New basis grid</span></label></div>`);
+    // Present one teaching operation at a time; retain existing controls and handlers.
+    const targetPanel=root.querySelector('#kino-target-x').closest('.kino-joint');
+    const projectionButton=root.querySelector('#kino-projection');
+    const projectionPanel=root.querySelector('#kino-projection-options');
+    const robotJoints=[0,1,2].map(i=>root.querySelector(`#kino-length-${i}`).closest('.kino-joint'));
+    const appearance=root.querySelector('#kino-background').closest('label');
+    const steps=document.createElement('div');steps.className='viz-row';
+    const setupButton=document.createElement('button');setupButton.type='button';setupButton.className='btn';setupButton.id='kino-setup';setupButton.textContent='1 · Set robot EE';
+    steps.append(setupButton,projectionButton);controls.prepend(steps);
+    const currentStatus=document.createElement('div');currentStatus.className='tabular-nums';currentStatus.id='kino-current-status';steps.after(currentStatus);
+    const setupIntro=document.createElement('div');setupIntro.className='text-small';setupIntro.textContent='Choose where the gripper should go. Set its x and y coordinates, then move Kino there.';targetPanel.prepend(setupIntro);
+    targetPanel.querySelector('span:not(.text-small)').textContent='Desired end-effector position';
+    root.querySelector('#kino-go').textContent='Set EE · move there';
+    const next=document.createElement('button');next.type='button';next.className='btn';next.id='kino-next';next.textContent='Next: project this position';targetPanel.append(next);
+    currentStatus.after(targetPanel);targetPanel.after(projectionPanel);
+    const projectionIntro=document.createElement('div');projectionIntro.className='text-small';projectionIntro.textContent='Project Kino’s current end-effector position onto a direction or basis. Kino stays in place.';projectionPanel.prepend(projectionIntro);
+    const settings=document.createElement('details');settings.id='kino-robot-settings';
+    const summary=document.createElement('summary');summary.textContent='Robot settings · lengths and joint locks';settings.append(summary);
+    const settingsBody=document.createElement('div');settingsBody.className='kino-joint';robotJoints.forEach(n=>settingsBody.append(n));settings.append(settingsBody);controls.append(settings);
+    const display=document.createElement('details'),displaySummary=document.createElement('summary');displaySummary.textContent='Display options';display.append(displaySummary,appearance);controls.append(display);
+    for(const id of ['kino-standard-grid','kino-basis-grid'])display.append(root.querySelector('#'+id).closest('label'));
+    const help=document.createElement('div');help.className='text-small';help.textContent='Scroll to zoom · drag to pan';display.append(help);
+    controls.append(error);
+    setupButton.addEventListener('click',()=>{stop();state.matrix=false;state.projection=false;travelVector=null;motionProgress=null;error.textContent='';sync();draw();save();});
+    next.addEventListener('click',()=>projectionButton.click());
+    const matrixButton=document.createElement('button');matrixButton.type='button';matrixButton.className='btn';matrixButton.textContent='3 · Matrix';matrixButton.id='kino-matrix';steps.append(matrixButton);
+    const matrixPanel=document.createElement('div');matrixPanel.className='kino-joint';matrixPanel.hidden=true;
+    matrixPanel.innerHTML=`<span>Scale the coordinate directions</span><span class="text-small">Apply a scaling matrix to the EE position vector. Kino stays visible as the original reference.</span><label class="form-label" for="kino-scale-mode">Scale</label><select class="form-select" id="kino-scale-mode"><option value="both">î and ĵ</option><option value="i">î only</option><option value="j">ĵ only</option></select><label class="form-label" for="kino-scale-x">î scale · sₓ</label><input class="form-control" id="kino-scale-x" type="number" min="-5" max="5" step="0.1" value="1"><label class="form-label" for="kino-scale-y">ĵ scale · sᵧ</label><input class="form-control" id="kino-scale-y" type="number" min="-5" max="5" step="0.1" value="1"><div id="kino-matrix-readout" class="tabular-nums" aria-live="polite"></div><label class="form-check"><input class="form-check-input" type="checkbox" id="kino-scaled-grid" checked><span class="form-check-label">Show scaled grid</span></label><button type="button" class="btn" id="kino-matrix-reset">Reset to identity</button>`;
+    projectionPanel.after(matrixPanel);
+    let matrixScale=[1,1];
+    const scaleMode=matrixPanel.querySelector('#kino-scale-mode'),scaleX=matrixPanel.querySelector('#kino-scale-x'),scaleY=matrixPanel.querySelector('#kino-scale-y');
+    const matrixReadout=matrixPanel.querySelector('#kino-matrix-readout');
+    function updateMatrix(){
+      scaleX.disabled=scaleMode.value==='j';scaleY.disabled=scaleMode.value==='i';
+      const sx=scaleX.disabled?1:scaleX.valueAsNumber,sy=scaleY.disabled?1:scaleY.valueAsNumber;
+      if(!Number.isFinite(sx)||!Number.isFinite(sy)||Math.abs(sx)>5||Math.abs(sy)>5){error.textContent='Enter scale factors between −5 and 5.';return;}
+      error.textContent='';matrixScale=[sx,sy];draw();
+    }
+    for(const input of [scaleX,scaleY,scaleMode])input.addEventListener('input',updateMatrix);
+    matrixPanel.querySelector('#kino-scaled-grid').addEventListener('change',draw);
+    matrixPanel.querySelector('#kino-matrix-reset').addEventListener('click',()=>{scaleX.value=1;scaleY.value=1;updateMatrix();});
+    matrixButton.addEventListener('click',()=>{stop();state.matrix=true;state.projection=false;travelVector=null;motionProgress=null;viewReach=null;error.textContent='';sync();draw();});
+    const nextMatrix=document.createElement('button');nextMatrix.type='button';nextMatrix.className='btn';nextMatrix.textContent='Next: explore scaling matrices';projectionPanel.append(nextMatrix);nextMatrix.addEventListener('click',()=>matrixButton.click());
+    const selectedBasisReadout=document.createElement('div');
+    selectedBasisReadout.id='kino-selected-basis-coordinates';selectedBasisReadout.className='tabular-nums';selectedBasisReadout.setAttribute('aria-live','polite');
+    root.querySelector('#kino-custom-direction').after(selectedBasisReadout);
+    const projectOn=root.querySelector('#kino-project-on'),axInput=root.querySelector('#kino-a-x'),ayInput=root.querySelector('#kino-a-y'),bxInput=root.querySelector('#kino-b-x'),byInput=root.querySelector('#kino-b-y');
+    const customBasis=()=>projectOn.value.startsWith('custom');
+    function direction(){return [axInput.valueAsNumber,ayInput.valueAsNumber];}
+    function directionB(){return [bxInput.valueAsNumber,byInput.valueAsNumber];}
+    function basisValid(){const a=direction(),b=directionB(),na=Math.hypot(...a),nb=Math.hypot(...b);return [...a,...b].every(Number.isFinite)&&na>1e-6&&nb>1e-6&&na<=40&&nb<=40&&Math.abs(a[0]*b[1]-a[1]*b[0])/(na*nb)>.001;}
+    function updateDirection(){
+      root.querySelector('#kino-custom-direction').hidden=!customBasis();
+      const a=direction(),b=directionB(),na=Math.hypot(...a),nb=Math.hypot(...b);
+      root.querySelector('#kino-unit').disabled=!(Number.isFinite(na)&&na>1e-6&&na<=40);
+      root.querySelector('#kino-unit-b').disabled=!(Number.isFinite(nb)&&nb>1e-6&&nb<=40);
+      root.querySelector('#kino-a-norm').textContent=basisValid()?`‖b₁‖ = ${na.toFixed(3)} · ‖b₂‖ = ${nb.toFixed(3)}`:'Choose two nonzero, nonparallel vectors (length ≤ 40).';
+      draw();
+    }
+    projectOn.addEventListener('change',updateDirection);
+    for(const input of [axInput,ayInput,bxInput,byInput])input.addEventListener('input',updateDirection);
+    for(const [id,inputs] of [['kino-unit',[axInput,ayInput]],['kino-unit-b',[bxInput,byInput]]])root.querySelector('#'+id).addEventListener('click',()=>{const n=Math.hypot(...inputs.map(v=>v.valueAsNumber));if(n>1e-6&&Number.isFinite(n)){inputs.forEach(v=>v.value=v.valueAsNumber/n);updateDirection();}});
+    for(const id of ['kino-standard-grid','kino-basis-grid'])root.querySelector('#'+id).addEventListener('change',draw);
+    let zoom=1,panX=0,panY=0,drag=null;
+    const zoomBar=document.createElement('div');zoomBar.className='viz-controls';
+    zoomBar.innerHTML='<button class="btn" type="button" id="kino-zoom-out" aria-label="Zoom out">−</button><span class="tabular-nums" id="kino-zoom-value">100%</span><button class="btn" type="button" id="kino-zoom-in" aria-label="Zoom in">+</button><button class="btn" type="button" id="kino-zoom-reset">Reset view</button>';
+    root.querySelector('.kino-plot').prepend(zoomBar);
+    function setZoom(value){zoom=Math.max(.25,Math.min(4,value));root.querySelector('#kino-zoom-value').textContent=`${Math.round(zoom*100)}%`;root.querySelector('#kino-zoom-out').disabled=zoom<=.25;root.querySelector('#kino-zoom-in').disabled=zoom>=4;draw();}
+    root.querySelector('#kino-zoom-in').addEventListener('click',()=>setZoom(zoom*1.25));
+    root.querySelector('#kino-zoom-out').addEventListener('click',()=>setZoom(zoom/1.25));
+    root.querySelector('#kino-zoom-reset').addEventListener('click',()=>{panX=0;panY=0;setZoom(1);});
+    svg.style.touchAction='none';svg.style.cursor='grab';
+    svg.addEventListener('wheel',e=>{
+      e.preventDefault();
+      const rect=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;
+      const x=(e.clientX-rect.left)*vb.width/rect.width,y=(e.clientY-rect.top)*vb.height/rect.height;
+      const old=zoom,next=Math.max(.25,Math.min(4,zoom*Math.exp(-e.deltaY*(e.deltaMode===1?.025:.0015))));
+      const ratio=next/old;
+      panX=x-vb.width/2-(x-vb.width/2-panX)*ratio;
+      panY=y-vb.height/2-(y-vb.height/2-panY)*ratio;
+      setZoom(next);
+    },{passive:false});
+    svg.addEventListener('pointerdown',e=>{
+      if(e.button!==0)return;
+      drag={id:e.pointerId,x:e.clientX,y:e.clientY,panX,panY};
+      svg.setPointerCapture(e.pointerId);svg.style.cursor='grabbing';e.preventDefault();
+    });
+    svg.addEventListener('pointermove',e=>{
+      if(!drag||e.pointerId!==drag.id)return;
+      const rect=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;
+      panX=drag.panX+(e.clientX-drag.x)*vb.width/rect.width;
+      panY=drag.panY+(e.clientY-drag.y)*vb.height/rect.height;draw();
+    });
+    const endDrag=e=>{if(drag&&drag.id===e.pointerId){drag=null;svg.style.cursor='grab';if(svg.hasPointerCapture(e.pointerId))svg.releasePointerCapture(e.pointerId);}};
+    svg.addEventListener('pointerup',endDrag);svg.addEventListener('pointercancel',endDrag);svg.addEventListener('lostpointercapture',()=>{drag=null;svg.style.cursor='grab';});
+    let motionId=null,viewReach=null,travelVector=null,motionProgress=null;
+    const targetX=root.querySelector('#kino-target-x'),targetY=root.querySelector('#kino-target-y'),go=root.querySelector('#kino-go');
+    const target=()=>[targetX.valueAsNumber,targetY.valueAsNumber];
+    function endpoint(){let a=0,x=0,y=0;for(let i=0;i<3;i++){a+=state.angles[i]*Math.PI/180;x+=state.lengths[i]*Math.cos(a);y+=state.lengths[i]*Math.sin(a);}return [x,y];}
+    function stop(){if(motionId!==null)cancelAnimationFrame(motionId);motionId=null;go.disabled=false;root.querySelector('#kino-stop').disabled=true;root.querySelector('#kino-next').disabled=false;projectionButton.disabled=false;save();}
+    controls.addEventListener('input',()=>{if(motionId!==null)stop();},true);
+    targetX.addEventListener('input',()=>{travelVector=null;motionProgress=null;viewReach=null;draw();});targetY.addEventListener('input',()=>{travelVector=null;motionProgress=null;viewReach=null;draw();});
+    root.querySelector('#kino-stop').addEventListener('click',stop);
+    root.querySelector('#kino-projection').addEventListener('click',()=>{
+      stop();state.matrix=false;state.projection=true;travelVector=null;motionProgress=null;viewReach=null;
+      error.textContent='';sync();draw();save();
+    });
+    go.addEventListener('click',()=>{
+      state.projection=false;
+
+      stop();const [tx,ty]=target(),[px,py]=endpoint(),r=Math.hypot(px,py),tr=Math.hypot(tx,ty);
+      if(!Number.isFinite(tx)||!Number.isFinite(ty)){error.textContent='Enter both target coordinates.';return;}
+      if(r<.001||tr<.001){error.textContent='Choose a nonzero target; proportional scaling cannot reach the origin.';return;}
+      const ratio=tr/r,startLengths=[...state.lengths],endLengths=startLengths.map(l=>l*ratio);
+      if(endLengths.some(l=>l<.1||l>10)){error.textContent='This target would put a link outside the 0.1–10 m range. Choose a closer target or change the pose.';return;}
+      const dx=tx-px,dy=ty-py,segmentLength2=dx*dx+dy*dy;
+      const closest=segmentLength2?Math.max(0,Math.min(1,-(px*dx+py*dy)/segmentLength2)):0;
+      const minRadius=Math.hypot(px+closest*dx,py+closest*dy);
+      if(startLengths.some(l=>l*minRadius/r<.1)){error.textContent='This straight path passes too close to the base for proportional link scaling. Choose another target.';return;}
+      travelVector={from:[px,py],to:[tx,ty],delta:[dx,dy]};
+      motionProgress={start:[px,py],current:[px,py]};
+      const startAngle=state.angles[0];let delta=(Math.atan2(ty,tx)-Math.atan2(py,px))*180/Math.PI;delta=((delta+540)%360)-180;
+      if(Math.abs(delta)>.001)state.locked[0]=false;
+      error.textContent='';go.disabled=true;root.querySelector('#kino-stop').disabled=false;root.querySelector('#kino-next').disabled=true;projectionButton.disabled=true;
+      viewReach=Math.max(startLengths.reduce((a,b)=>a+b,0),endLengths.reduce((a,b)=>a+b,0),tr)+.9;
+      const distance=Math.hypot(tx-px,ty-py),duration=Math.max(2500,Math.min(12000,distance*1000));
+      const started=performance.now()+1400;
+      draw();
+      function frame(now){
+        const u=Math.max(0,Math.min(1,(now-started)/duration)),t=u*u*(3-2*u);
+        const cx=px+(tx-px)*t,cy=py+(ty-py)*t;
+        motionProgress={start:[px,py],current:[cx,cy]};
+        const currentRatio=Math.hypot(cx,cy)/r;
+        const turn=(Math.atan2(cy,cx)-Math.atan2(py,px))*180/Math.PI;
+        state.lengths=startLengths.map(l=>l*currentRatio);
+        state.angles[0]=((startAngle+turn+540)%360)-180;
+        sync();draw();
+        if(u<1)motionId=requestAnimationFrame(frame);else{motionId=null;go.disabled=false;root.querySelector('#kino-stop').disabled=true;root.querySelector('#kino-next').disabled=false;projectionButton.disabled=false;save();}
+      }
+      motionId=requestAnimationFrame(frame);
+    });
+    const basisReadout=document.createElement('div');
+    basisReadout.className='tabular-nums kino-output';
+    root.querySelector('.kino-output').after(basisReadout);
+    function sync(){matrixPanel.hidden=!state.matrix;matrixButton.setAttribute('aria-pressed',String(!!state.matrix));root.querySelector('#kino-projection-options').hidden=!state.projection;root.querySelector('#kino-projection').setAttribute('aria-pressed',String(!!state.projection));root.querySelector('#kino-projection').textContent='2 · Projection';root.querySelector('#kino-setup').setAttribute('aria-pressed',String(!state.projection&&!state.matrix));targetPanel.hidden=!!state.projection||!!state.matrix;root.querySelector('#kino-background').checked=!!state.background;for(let i=0;i<3;i++){root.querySelector(`#kino-length-${i}`).value=Number(state.lengths[i].toFixed(3));root.querySelector(`#kino-lock-${i}`).checked=state.locked[i];root.querySelector(`#kino-angle-${i}`).value=state.angles[i];root.querySelector(`#kino-angle-${i}`).disabled=state.locked[i];root.querySelector(`#kino-value-${i}`).textContent=`${Number(state.angles[i].toFixed(1))}°`;}}
+    const el=(tag,attrs={},text)=>{const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v]of Object.entries(attrs))n.setAttribute(k,v);if(text!==undefined)n.textContent=text;svg.appendChild(n);return n;};
+    function draw(){
+      const w=Math.max(280,root.querySelector('.kino-plot').clientWidth),h=Math.max(260,window.innerHeight-80);svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.replaceChildren();
+      const pts=[[0,0]];let angle=0;
+      for(let i=0;i<3;i++){angle+=state.angles[i]*Math.PI/180;pts.push([pts[i][0]+state.lengths[i]*Math.cos(angle),pts[i][1]+state.lengths[i]*Math.sin(angle)]);}
+      const tv=target(),targetRadius=!state.projection&&tv.every(Number.isFinite)?Math.min(40,Math.hypot(...tv)):0;
+      const customExtent=state.projection&&customBasis()?Math.min(40,Math.max(Math.hypot(...direction())||0,Math.hypot(...directionB())||0)):0;
+      const reach=(viewReach??Math.max(customExtent+.9,state.lengths.reduce((a,b)=>a+b,0)+.9,targetRadius+.9))/zoom,scale=Math.min((w-76)/(2*reach),(h-64)/(2*reach));
+      const ox=w/2+panX,oy=h/2+panY,X=x=>ox+x*scale,Y=y=>oy-y*scale;
+      const step=reach>40?20:reach>20?10:reach>12?5:reach>6?2:reach<2?.5:1;
+      if((!state.projection&&!state.matrix)||root.querySelector('#kino-standard-grid').checked){
+      const xmin=(32-ox)/scale,xmax=(w-24-ox)/scale,ymin=(oy-h+28)/scale,ymax=(oy-24)/scale;
+      for(let v=Math.ceil(xmin/step)*step;v<=xmax;v+=step){if(Math.abs(v)<1e-8)continue;el('line',{x1:X(v),y1:24,x2:X(v),y2:h-28,stroke:'var(--border)','stroke-width':.6});el('text',{x:X(v),y:oy+17,'text-anchor':'middle'},Number(v.toFixed(2)));}
+      for(let v=Math.ceil(ymin/step)*step;v<=ymax;v+=step){if(Math.abs(v)<1e-8)continue;el('line',{x1:32,y1:Y(v),x2:w-24,y2:Y(v),stroke:'var(--border)','stroke-width':.6});if(Math.abs(v)*scale>22)el('text',{x:ox-10,y:Y(v)+4,'text-anchor':'end'},Number(v.toFixed(2)));}
+      el('line',{x1:32,y1:oy,x2:w-20,y2:oy,stroke:'var(--foreground)','stroke-width':1});el('line',{x1:ox,y1:h-28,x2:ox,y2:20,stroke:'var(--foreground)','stroke-width':1});
+      el('path',{d:`M ${w-27} ${oy-4} L ${w-20} ${oy} L ${w-27} ${oy+4} M ${ox-4} 27 L ${ox} 20 L ${ox+4} 27`,fill:'none',stroke:'var(--foreground)'});
+      el('text',{x:w-24,y:oy-12,'text-anchor':'end'},'x (m)');el('text',{x:ox+12,y:26},'y (m)');
+      }
+      if(state.projection&&customBasis()&&basisValid()&&root.querySelector('#kino-basis-grid').checked){
+        const a=direction(),b=directionB(),det=a[0]*b[1]-a[1]*b[0];
+        const left=(32-ox)/scale,right=(w-24-ox)/scale,bottom=(oy-(h-28))/scale,top=(oy-24)/scale;
+        const corners=[[left,bottom],[left,top],[right,bottom],[right,top]];
+        const cs=corners.map(([x,y])=>[(b[1]*x-b[0]*y)/det,(-a[1]*x+a[0]*y)/det]);
+        const defsGrid=el('defs');defsGrid.innerHTML=`<clipPath id="kino-grid-clip"><rect x="32" y="24" width="${w-56}" height="${h-52}"/></clipPath>`;
+        const group=el('g',{'clip-path':'url(#kino-grid-clip)'});
+        const gridLine=(x1,y1,x2,y2,major)=>{const line=el('line',{x1:X(x1),y1:Y(y1),x2:X(x2),y2:Y(y2),stroke:major?'var(--viz-series-2)':'var(--border)','stroke-width':major?1.5:1});group.appendChild(line);};
+        const limits=[0,1].map(i=>[Math.floor(Math.min(...cs.map(c=>c[i])))-1,Math.ceil(Math.max(...cs.map(c=>c[i])))+1]);
+        for(let axis=0;axis<2;axis++){
+          const [lo,hi]=limits[axis],stride=Math.max(1,Math.ceil((hi-lo)/80)),other=limits[1-axis];
+          const fixed=axis===0?a:b,along=axis===0?b:a;
+          for(let k=Math.ceil(lo/stride)*stride;k<=hi;k+=stride)gridLine(k*fixed[0]+other[0]*along[0],k*fixed[1]+other[0]*along[1],k*fixed[0]+other[1]*along[0],k*fixed[1]+other[1]*along[1],k===0);
+        }
+      }
+      if(state.matrix&&matrixPanel.querySelector('#kino-scaled-grid').checked){
+        const [sx,sy]=matrixScale;
+        const gridDefs=el('defs');gridDefs.innerHTML=`<clipPath id="kino-scaled-clip"><rect x="32" y="24" width="${w-56}" height="${h-52}"/></clipPath>`;
+        const group=el('g',{'clip-path':'url(#kino-scaled-clip)'});
+        const gridLine=(x1,y1,x2,y2)=>{const n=el('line',{x1,y1,x2,y2,stroke:'var(--viz-series-2)','stroke-opacity':.35,'stroke-width':1});group.append(n);};
+        const addLines=(factor,vertical)=>{
+          if(Math.abs(factor)<1e-8){gridLine(vertical?ox:32,vertical?24:oy,vertical?ox:w-24,vertical?h-28:oy);return;}
+          const lo=vertical?(32-ox)/scale:(oy-h+28)/scale,hi=vertical?(w-24-ox)/scale:(oy-24)/scale;
+          const spacing=Math.abs(factor),stride=Math.max(1,Math.ceil((hi-lo)/spacing/120));
+          for(let k=Math.ceil(lo/spacing/stride)*stride;k<=hi/spacing;k+=stride){const v=k*spacing;gridLine(vertical?X(v):32,vertical?24:Y(v),vertical?X(v):w-24,vertical?h-28:Y(v));}
+        };
+        addLines(sx,true);addLines(sy,false);
+      }
+      if(!state.projection&&!state.matrix&&tv.every(Number.isFinite)&&targetRadius<=reach){
+        const tx=X(tv[0]),ty=Y(tv[1]),a=Math.atan2(ty-oy,tx-ox);
+        el('line',{x1:ox,y1:oy,x2:tx,y2:ty,stroke:'var(--viz-series-3)','stroke-width':2,'stroke-dasharray':'7 4'});
+        el('path',{d:`M ${tx-10*Math.cos(a-.4)} ${ty-10*Math.sin(a-.4)} L ${tx} ${ty} L ${tx-10*Math.cos(a+.4)} ${ty-10*Math.sin(a+.4)}`,fill:'none',stroke:'var(--viz-series-3)','stroke-width':2});
+        el('circle',{cx:tx,cy:ty,r:7,fill:'none',stroke:'var(--viz-series-3)','stroke-width':2});
+        el('text',{x:tx-12,y:ty+22,'text-anchor':'end'},'Target');
+      }
+      const end=pts[3],ex=X(end[0]),ey=Y(end[1]);
+      currentStatus.textContent=`Current EE: (${end[0].toFixed(2)}, ${end[1].toFixed(2)}) m`;
+      selectedBasisReadout.hidden=!state.projection;
+      const fmtBasis=v=>(Math.abs(v)<.000005?0:v).toFixed(3);
+      if(state.projection){
+        if(customBasis()){
+          if(basisValid()){
+            const a=direction(),b=directionB(),det=a[0]*b[1]-a[1]*b[0];
+            const c1=(b[1]*end[0]-b[0]*end[1])/det,c2=(-a[1]*end[0]+a[0]*end[1])/det;
+            selectedBasisReadout.replaceChildren();
+            for(const text of ['EE in selected basis (b₁, b₂)',`[P]ᴮ = (${fmtBasis(c1)}, ${fmtBasis(c2)})`,`P = ${fmtBasis(c1)} b₁ ${c2<-.000005?'−':'+'} ${fmtBasis(Math.abs(c2))} b₂`]){
+              const line=document.createElement('div');line.textContent=text;selectedBasisReadout.append(line);
+            }
+          }else selectedBasisReadout.textContent='EE basis coordinates unavailable: choose two nonzero, nonparallel basis vectors.';
+        }else{
+          selectedBasisReadout.textContent=`EE in standard basis (î, ĵ): (${fmtBasis(end[0])}, ${fmtBasis(end[1])}) m`;
+        }
+      }
+
+      const defs=el('defs');
+      defs.innerHTML=`<linearGradient id="kino-metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eff3f6"/><stop offset=".35" stop-color="#b6c3cd"/><stop offset=".55" stop-color="#e1e8ed"/><stop offset="1" stop-color="#718494"/></linearGradient><linearGradient id="kino-shell" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffbd65"/><stop offset=".5" stop-color="#ed8c32"/><stop offset="1" stop-color="#b65315"/></linearGradient><radialGradient id="kino-bearing"><stop stop-color="#526675"/><stop offset=".65" stop-color="#253640"/><stop offset="1" stop-color="#111e27"/></radialGradient>`;
+      if(!state.projection&&!state.matrix)el('line',{x1:ox,y1:oy,x2:ex,y2:ey,stroke:'var(--viz-series-2)','stroke-width':1.5,'stroke-dasharray':'5 5'});
+      const robotStart=svg.children.length;
+      // Bolted mounting plate, seen from above. Joint centers retain exact geometry.
+      el('rect',{x:ox-33,y:oy-28,width:66,height:56,rx:8,fill:'url(#kino-metal)',stroke:'#53636e','stroke-width':2});
+      for(const dx of [-24,24])for(const dy of [-19,19]){
+        el('circle',{cx:ox+dx,cy:oy+dy,r:4,fill:'#344550',stroke:'#dce4e9','stroke-width':1});
+        el('line',{x1:ox+dx-2,y1:oy+dy,x2:ox+dx+2,y2:oy+dy,stroke:'#a7b8c3','stroke-width':1});
+      }
+      for(let i=0;i<3;i++){
+        const x=X(pts[i][0]),y=Y(pts[i][1]),xx=X(pts[i+1][0]),yy=Y(pts[i+1][1]);
+        const d=Math.hypot(xx-x,yy-y),deg=Math.atan2(yy-y,xx-x)*180/Math.PI;
+        const width=[25,21,16][i],g=el('g',{transform:`translate(${x} ${y}) rotate(${deg})`});
+        const add=(tag,a)=>{const n=el(tag,a);g.appendChild(n);return n;};
+        add('rect',{x:0,y:-width/2,width:Math.max(1,d),height:width,rx:width/2,fill:'url(#kino-metal)',stroke:'#536674','stroke-width':1.5});
+        if(d>36){
+          add('rect',{x:14,y:-width/2+3,width:d-28,height:width-6,rx:5,fill:'url(#kino-shell)',stroke:'#b96a27','stroke-width':.8});
+          add('line',{x1:20,y1:-width/2+5,x2:d-20,y2:-width/2+5,stroke:'#ffe0a9','stroke-width':1.2});
+          add('path',{d:`M 10 ${width/2+2} Q ${d/2} ${width/2+9} ${d-9} ${width/2+2}`,fill:'none',stroke:'#263640','stroke-width':3});
+          add('line',{x1:d*.4,y1:-2,x2:d*.6,y2:-2,stroke:'#6c421e','stroke-width':2});
+        }
+        el('text',{x:(x+xx)/2+15,y:(y+yy)/2-20},`L${i+1}`);
+      }
+      for(let i=0;i<3;i++){
+        const x=X(pts[i][0]),y=Y(pts[i][1]),r=[20,16,13][i];
+        el('circle',{cx:x,cy:y,r,fill:'url(#kino-metal)',stroke:'#485c6a','stroke-width':1.5});
+        el('circle',{cx:x,cy:y,r:r-4,fill:'url(#kino-bearing)',stroke:'#a6b4bf','stroke-width':1});
+        el('circle',{cx:x,cy:y,r:5,fill:'url(#kino-metal)',stroke:'#1b2d38','stroke-width':1});
+        for(let a=0;a<4;a++){const t=a*Math.PI/2+Math.PI/4;el('circle',{cx:x+(r-2.5)*Math.cos(t),cy:y+(r-2.5)*Math.sin(t),r:1.5,fill:'#314550'});}
+        el('text',{x:x-r-6,y:y-r-5,'text-anchor':'end'},`J${i+1}${state.locked[i]?' · locked':''}`);
+      }
+      // Gripper fingers straddle the tool-center point P; P stays at link 3's endpoint.
+      const gripper=el('g',{transform:`translate(${ex} ${ey}) rotate(${-angle*180/Math.PI})`});
+      const part=(tag,a)=>{const n=el(tag,a);gripper.appendChild(n);return n;};
+      part('rect',{x:-24,y:-14,width:15,height:28,rx:4,fill:'url(#kino-bearing)',stroke:'#8d9faa','stroke-width':1.5});
+      part('rect',{x:-19,y:-10,width:6,height:20,rx:2,fill:'url(#kino-metal)'});
+      for(const side of [-1,1]){
+        part('path',{d:`M -10 ${side*10} L 9 ${side*10} L 9 ${side*5}`,fill:'none',stroke:'#394c59','stroke-width':7,'stroke-linejoin':'round'});
+        part('path',{d:`M -10 ${side*10-1} L 8 ${side*10-1}`,fill:'none',stroke:'#d1dde4','stroke-width':3});
+        part('rect',{x:5,y:side===1?3:-7,width:6,height:4,rx:1,fill:'#17252d'});
+      }
+      const robotParts=Array.from(svg.children).slice(robotStart);
+      const robotLayer=el('g',{'opacity':state.projection||state.matrix?0.10:state.background?0.16:1});
+      robotParts.forEach(n=>robotLayer.appendChild(n));
+      if(state.background&&!state.projection&&!state.matrix){
+        el('line',{x1:ox,y1:oy,x2:ex,y2:ey,stroke:'var(--viz-series-2)','stroke-width':3});
+        const heading=Math.atan2(ey-oy,ex-ox),size=11;
+        el('path',{d:`M ${ex-size*Math.cos(heading-.4)} ${ey-size*Math.sin(heading-.4)} L ${ex} ${ey} L ${ex-size*Math.cos(heading+.4)} ${ey-size*Math.sin(heading+.4)}`,fill:'none',stroke:'var(--viz-series-2)','stroke-width':3});
+        el('circle',{cx:ox,cy:oy,r:4,fill:'var(--foreground)'});
+      }
+      el('circle',{cx:ex,cy:ey,r:3,fill:'var(--viz-series-2)',stroke:'var(--background)','stroke-width':1});
+      el('text',{x:ex+18,y:ey-23},'P · EE');
+      if(!state.projection)el('text',{x:ox-9,y:oy+46,'text-anchor':'end'},'O · fixed base');
+      if(travelVector){
+        const {from,to,delta}=travelVector;
+        const sx=X(from[0]),sy=Y(from[1]),tx=X(to[0]),ty=Y(to[1]),a=Math.atan2(ty-sy,tx-sx);
+        el('line',{x1:sx,y1:sy,x2:tx,y2:ty,stroke:'var(--background)','stroke-width':6});
+        el('line',{x1:sx,y1:sy,x2:tx,y2:ty,stroke:'var(--viz-series-4)','stroke-width':3});
+        el('path',{d:`M ${tx-12*Math.cos(a-.4)} ${ty-12*Math.sin(a-.4)} L ${tx} ${ty} L ${tx-12*Math.cos(a+.4)} ${ty-12*Math.sin(a+.4)}`,fill:'none',stroke:'var(--viz-series-4)','stroke-width':3});
+        el('circle',{cx:sx,cy:sy,r:4,fill:'var(--background)',stroke:'var(--viz-series-4)','stroke-width':2});
+        const label=el('text',{x:(sx+tx)/2+12,y:(sy+ty)/2-16},`Δp = (${delta[0].toFixed(2)}, ${delta[1].toFixed(2)}) m`);
+        label.setAttribute('paint-order','stroke');label.setAttribute('stroke','var(--background)');label.setAttribute('stroke-width','4');label.setAttribute('stroke-linejoin','round');
+      }
+      if(motionProgress){
+        const [sx,sy]=motionProgress.start,[cx,cy]=motionProgress.current;
+        const dx=cx-sx,dy=cy-sy;
+        const clean=v=>Math.abs(v)<.0005?0:v;
+        const basisArrow=(ax,ay,bx,by,color)=>{
+          const x1=X(ax),y1=Y(ay),x2=X(bx),y2=Y(by),len=Math.hypot(x2-x1,y2-y1);
+          if(len<.4)return;
+          const a=Math.atan2(y2-y1,x2-x1),tip=Math.min(7,len*.4);
+          el('line',{x1,y1,x2,y2,stroke:'var(--background)','stroke-width':6});
+          el('line',{x1,y1,x2,y2,stroke:color,'stroke-width':2.5});
+          el('path',{d:`M ${x2-tip*Math.cos(a-.45)} ${y2-tip*Math.sin(a-.45)} L ${x2} ${y2} L ${x2-tip*Math.cos(a+.45)} ${y2-tip*Math.sin(a+.45)}`,fill:'none',stroke:color,'stroke-width':2.5});
+        };
+        const xsign=Math.sign(dx),ysign=Math.sign(dy);
+        for(let u=0;u<Math.abs(dx)-1e-8;u++){
+          const v=Math.min(u+1,Math.abs(dx));
+          basisArrow(sx+xsign*u,sy,sx+xsign*v,sy,'var(--viz-series-1)');
+        }
+        for(let u=0;u<Math.abs(dy)-1e-8;u++){
+          const v=Math.min(u+1,Math.abs(dy));
+          basisArrow(cx,sy+ysign*u,cx,sy+ysign*v,'var(--viz-series-3)');
+        }
+        const label=(x,y,text,anchor)=>{
+          const n=el('text',{x,y,'text-anchor':anchor,stroke:'var(--background)','stroke-width':4,'stroke-linejoin':'round','paint-order':'stroke'},text);
+          return n;
+        };
+        if(Math.abs(dx)>.02)label(X((sx+cx)/2),Y(sy)+24,`${clean(dx).toFixed(2)} î m`,'middle');
+        if(Math.abs(dy)>.02)label(X(cx)+12,Y((sy+cy)/2),`${clean(dy).toFixed(2)} ĵ m`,'start');
+        basisReadout.textContent=`Travelled: ${clean(dx).toFixed(2)} î ${dy<-.0005?'−':'+'} ${Math.abs(clean(dy)).toFixed(2)} ĵ m · Each full arrow = 1 m`;
+      }else{basisReadout.textContent='';}
+      // Absolute position components measured on the base-frame axes.
+      const axisComponent=(value,isX,color)=>{
+        const sign=Math.sign(value);
+        for(let k=0;k<Math.abs(value)-1e-8;k++){
+          const a=sign*k,b=sign*Math.min(k+1,Math.abs(value));
+          const x1=isX?X(a):ox,y1=isX?oy:Y(a),x2=isX?X(b):ox,y2=isX?oy:Y(b);
+          const len=Math.hypot(x2-x1,y2-y1),theta=Math.atan2(y2-y1,x2-x1),tip=Math.min(7,len*.4);
+          el('line',{x1,y1,x2,y2,stroke:color,'stroke-width':3});
+          el('path',{d:`M ${x2-tip*Math.cos(theta-.45)} ${y2-tip*Math.sin(theta-.45)} L ${x2} ${y2} L ${x2-tip*Math.cos(theta+.45)} ${y2-tip*Math.sin(theta+.45)}`,fill:'none',stroke:color,'stroke-width':2.5});
+        }
+      };
+      if(!state.projection&&!state.matrix){
+      el('line',{x1:ex,y1:ey,x2:ex,y2:oy,stroke:'var(--viz-series-1)','stroke-width':1.5,'stroke-dasharray':'3 5'});
+      el('line',{x1:ex,y1:ey,x2:ox,y2:ey,stroke:'var(--viz-series-3)','stroke-width':1.5,'stroke-dasharray':'3 5'});
+      axisComponent(end[0],true,'var(--viz-series-1)');
+      axisComponent(end[1],false,'var(--viz-series-3)');
+      }
+      const cleanCoord=v=>(Math.abs(v)<.005?0:v).toFixed(2);
+      const axisLabel=(x,y,text,anchor)=>el('text',{x,y,'text-anchor':anchor,stroke:'var(--background)','stroke-width':4,'stroke-linejoin':'round','paint-order':'stroke'},text);
+      if(!state.projection&&!state.matrix){
+      axisLabel(ex,oy-16,`${cleanCoord(end[0])} î m`,'middle');
+      axisLabel(ox+14,ey-10,`${cleanCoord(end[1])} ĵ m`,'start');
+      output.textContent=`End effector P = (${end[0].toFixed(2)}, ${end[1].toFixed(2)}) m`;
+      }
+      if(state.projection){
+        const modes=projectOn.value==='both'?[[1,0,'î','var(--viz-series-1)'],[0,1,'ĵ','var(--viz-series-3)']]:projectOn.value==='i'?[[1,0,'î','var(--viz-series-1)']]:projectOn.value==='j'?[[0,1,'ĵ','var(--viz-series-3)']]:(basisValid()?(projectOn.value==='custom1'?[[...direction(),'b̂₁','var(--viz-series-4)']]:projectOn.value==='custom2'?[[...directionB(),'b̂₂','var(--viz-series-5)']]:[[...direction(),'b̂₁','var(--viz-series-4)'],[...directionB(),'b̂₂','var(--viz-series-5)']]):[]);
+        const descriptions=[];
+        for(const [ax,ay,name,color] of modes){
+          const norm=Math.hypot(ax,ay);if(!Number.isFinite(norm)||norm<1e-9||norm>40){output.textContent='Choose a nonzero projection vector of length at most 40.';continue;}
+          const ux=ax/norm,uy=ay/norm,s=end[0]*ux+end[1]*uy,qx=s*ux,qy=s*uy;
+          const arrow=(x1,y1,x2,y2,width=2.5,arrowColor=color)=>{
+            const a=Math.atan2(y2-y1,x2-x1),len=Math.hypot(x2-x1,y2-y1),tip=Math.min(8,len*.4);if(len<.1)return;
+            el('line',{x1,y1,x2,y2,stroke:arrowColor,'stroke-width':width});
+            el('path',{d:`M ${x2-tip*Math.cos(a-.45)} ${y2-tip*Math.sin(a-.45)} L ${x2} ${y2} L ${x2-tip*Math.cos(a+.45)} ${y2-tip*Math.sin(a+.45)}`,fill:'none',stroke:arrowColor,'stroke-width':width});
+          };
+          if(customBasis()){
+            el('line',{x1:X(-ux*reach),y1:Y(-uy*reach),x2:X(ux*reach),y2:Y(uy*reach),stroke:'var(--border)','stroke-width':1});
+
+            axisLabel(X(ax)+10,Y(ay)-15,`${name==='b̂₁'?'b₁':'b₂'} = (${ax.toFixed(2)}, ${ay.toFixed(2)})`,'start');
+          }
+          if(customBasis()){
+            const basisColor='#0072B2';
+            // Draw basis arrows first so cascaded unit arrows remain on top.
+            arrow(ox,oy,X(ax),Y(ay),6,'var(--background)');
+            arrow(ox,oy,X(ax),Y(ay),3.5,basisColor);
+            el('circle',{cx:X(ax),cy:Y(ay),r:5,fill:basisColor,stroke:'var(--background)','stroke-width':1.5});
+          }
+          for(let k=0;k<Math.abs(s)-1e-8;k++){
+            const v=Math.sign(s)*k,w=Math.sign(s)*Math.min(k+1,Math.abs(s));
+            arrow(X(v*ux),Y(v*uy),X(w*ux),Y(w*uy));
+          }
+          el('line',{x1:ex,y1:ey,x2:X(qx),y2:Y(qy),stroke:color,'stroke-width':1.5,'stroke-dasharray':'4 5'});
+          el('circle',{cx:X(qx),cy:Y(qy),r:4,fill:'var(--background)',stroke:color,'stroke-width':1.5});
+          const residual=Math.hypot(end[0]-qx,end[1]-qy);
+          if(residual*scale>12&&Math.abs(s)*scale>12){
+            const vx=(end[0]-qx)/residual,vy=(end[1]-qy)/residual,z=8/scale,sign=Math.sign(s);
+            el('path',{d:`M ${X(qx-sign*ux*z)} ${Y(qy-sign*uy*z)} L ${X(qx-sign*ux*z+vx*z)} ${Y(qy-sign*uy*z+vy*z)} L ${X(qx+vx*z)} ${Y(qy+vy*z)}`,fill:'none',stroke:'var(--foreground)','stroke-width':1});
+          }
+          axisLabel(X(qx)+12,Y(qy)+22,`${cleanCoord(s)} ${name} m`,'start');
+          descriptions.push(`proj${name}(P) = ${cleanCoord(s)} ${name} m`);
+        }
+        if(descriptions.length)output.textContent=descriptions.join(' · ')+' · Each full arrow = 1 m along the unit direction';
+        if(customBasis()){
+          if(!basisValid())output.textContent='A basis requires two nonzero, nonparallel vectors.';
+          else{
+            const a=direction(),b=directionB(),det=a[0]*b[1]-a[1]*b[0];
+            const c1=(b[1]*end[0]-b[0]*end[1])/det,c2=(-a[1]*end[0]+a[0]*end[1])/det;
+            basisReadout.textContent=`New basis coordinates: P = ${c1.toFixed(2)} b₁ ${c2<0?'−':'+'} ${Math.abs(c2).toFixed(2)} b₂. Projections use perpendicular drops; these coordinates use basis decomposition.`;
+          }
+        }
+
+      }
+      if(state.matrix){
+        const [sx,sy]=matrixScale,px=end[0],py=end[1],qx=sx*px,qy=sy*py;
+        const vector=(x,y,color,label,width)=>{
+          const tx=X(x),ty=Y(y),a=Math.atan2(ty-oy,tx-ox);
+          el('line',{x1:ox,y1:oy,x2:tx,y2:ty,stroke:color,'stroke-width':width});
+          if(Math.hypot(x,y)>1e-8)el('path',{d:`M ${tx-10*Math.cos(a-.4)} ${ty-10*Math.sin(a-.4)} L ${tx} ${ty} L ${tx-10*Math.cos(a+.4)} ${ty-10*Math.sin(a+.4)}`,fill:'none',stroke:color,'stroke-width':width});
+          el('text',{x:tx+12,y:ty-12,stroke:'var(--background)','stroke-width':4,'paint-order':'stroke'},label);
+        };
+        vector(px,py,'var(--muted-foreground)','P · original',1.5);
+        vector(qx,qy,'var(--viz-series-4)','A P · scaled',3);
+        vector(sx,0,'#0072B2',`${sx.toFixed(2)} î`,4);
+        vector(0,sy,'#0072B2',`${sy.toFixed(2)} ĵ`,4);
+        matrixReadout.innerHTML=`<div>A =</div><table class="table table-sm" aria-label="Scaling matrix"><tbody><tr><td>${sx.toFixed(2)}</td><td>0</td></tr><tr><td>0</td><td>${sy.toFixed(2)}</td></tr></tbody></table><div>P = (${px.toFixed(2)}, ${py.toFixed(2)}) m</div><div>A P = (${qx.toFixed(2)}, ${qy.toFixed(2)}) m</div><div>A î = (${sx.toFixed(2)}, 0)</div><div>A ĵ = (0, ${sy.toFixed(2)})</div>`;
+      }
+
+    }
+    for(let i=0;i<3;i++){
+      root.querySelector(`#kino-length-${i}`).addEventListener('input',e=>{const v=e.target.valueAsNumber;if(!Number.isFinite(v)||v<.1||v>10){error.textContent='Enter a link length between 0.1 and 10 m.';return;}error.textContent='';state.lengths[i]=v;draw();save();});
+      root.querySelector(`#kino-angle-${i}`).addEventListener('input',e=>{if(state.locked[i])return;state.angles[i]=Number(e.target.value);root.querySelector(`#kino-value-${i}`).textContent=`${Number(state.angles[i].toFixed(1))}°`;draw();save();});
+      root.querySelector(`#kino-lock-${i}`).addEventListener('change',e=>{state.locked[i]=e.target.checked;sync();draw();save();});
+    }
+    root.querySelector('#kino-background').addEventListener('change',e=>{state.background=e.target.checked;draw();save();});
+    window.addEventListener('openai:set_globals',e=>{const incoming=e.detail?.globals?.widgetState?.modelContent;if(valid(incoming)&&incoming.poseVersion===2){state=structuredClone(incoming);sync();draw();}});
+    sync();const initialMode=new URLSearchParams(location.search).get('mode');if(initialMode==='projection')projectionButton.click();else if(initialMode==='matrix')matrixButton.click();else setupButton.click();new ResizeObserver(draw).observe(root);window.addEventListener('resize',draw);draw();
+  })();
+  </script>
+</div></body></html>
